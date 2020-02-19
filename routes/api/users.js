@@ -8,6 +8,7 @@ const validateRegisterInput = require("../../validation/register");
 const validateLoginInput = require("../../validation/login");
 // Load User model
 const User = require("../../models/User");
+const Data = require("../../models/Data");
 
 // @route POST api/users/register
 // @desc Register user
@@ -35,11 +36,24 @@ router.post("/register", (req, res) => {
             newUser.password = hash;
             newUser
               .save()
-              .then(user => res.json(user))
-              .catch(err => console.log(err));
+              .then((user) =>{ 
+                res.json(user);
+              })
+              .catch(err => console.log(err));     
           });
         });
-      }
+      console.log(newUser)
+      let newUserID = newUser.id
+      const newWatchLater = new Data({
+        movie: [],
+        user:newUserID
+      });
+      newWatchLater.save().then((user) =>{ 
+        console.log("created new watch later tab");
+        console.log(newWatchLater)
+      })
+      .catch(err => console.log(err));
+    }
     });
   });
 
@@ -66,6 +80,7 @@ router.post("/login", (req, res) => {
         if (isMatch) {
           // User matched
           // Create JWT Payload
+          console.log(user)
           const payload = {
             id: user.id,
             name: user.name
